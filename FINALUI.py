@@ -11,7 +11,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import r2_score
 import os
 
-# --- Configuration ---
 CSV_FILE = 'surat_weather_Finalv4_3years.csv'
 PANEL_AREA_M2 = 2.0
 GRID_RATE = 7.0
@@ -23,7 +22,7 @@ LOAD_PROFILE = {
     "Washing Machine": {"qty": 1, "kwh": 0.5}
 }
 
-# --- Page Config ---
+
 st.set_page_config(
     page_title="SHEOS AI",
     page_icon="☀️",
@@ -31,8 +30,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- Ultra Dark Theme CSS ---
-# --- Ultra Dark Theme CSS (Fixed Visibility) ---
 st.markdown("""
 <style>
     /* 1. GLOBAL TEXT & BACKGROUND */
@@ -115,7 +112,7 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-# --- Data Loading & Model Training (Cached) ---
+
 @st.cache_resource
 def load_and_train_model(csv_path):
     """Load CSV and train ML model - cached for performance"""
@@ -219,10 +216,10 @@ COLORS = {
     'success': '#6bcf7f'
 }
 
-# --- Load Data ---
+
 df, model, scaler, model_accuracy = load_and_train_model(CSV_FILE)
 
-# --- Sidebar ---
+
 st.sidebar.markdown("<h2 style='text-align: center; font-size: 2rem;'>⚙️ CONTROL</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
@@ -264,12 +261,12 @@ with col2:
     st.metric("☁️", f"{current_row['cloud_percentage']:.0f}%", help="Cloud Cover")
     st.metric("🤖", f"{model_accuracy*100:.1f}%", help="Model Accuracy")
 
-# --- Header ---
+
 st.markdown("<h1>☀️ SHEOS AI</h1>", unsafe_allow_html=True)
 st.markdown(f"<p style='text-align: center; color: #888; font-size: 1.2rem; margin-top: -10px;'>{current_row['datetime'].strftime('%d %B %Y • %H:%M')}</p>", unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
 
-# --- Tabs ---
+
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🏠 DASHBOARD",
     "📈 FORECAST",
@@ -278,7 +275,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "💰 ROI"
 ])
 
-# --- TAB 1: Dashboard ---
+
 with tab1:
     input_data = pd.DataFrame([{
         'irradiance_W_m2': current_row['irradiance_W_m2'],
@@ -299,7 +296,7 @@ with tab1:
     else:
         efficiency = 20
     
-    # Top Metrics
+    
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -313,11 +310,11 @@ with tab1:
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Visual Dashboard - 2 Column Layout
+    
     col_left, col_right = st.columns([1, 1])
     
     with col_left:
-        # Gauge Chart
+       
         fig_gauge = go.Figure(go.Indicator(
             mode="gauge+number",
             value=efficiency,
@@ -353,8 +350,8 @@ with tab1:
         st.plotly_chart(fig_gauge, use_container_width=True)
     
     with col_right:
-        # Real-time Power Meter (Speedometer style)
-        max_power = num_panels * 0.4  # Max theoretical power per panel
+        
+        max_power = num_panels * 0.4  
         
         fig_speed = go.Figure(go.Indicator(
             mode="gauge+number+delta",
@@ -388,12 +385,12 @@ with tab1:
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Environmental Impact Visualization
+   
     st.markdown("<h3 style='text-align: center;'>🌍 ENVIRONMENTAL IMPACT (TODAY)</h3>", unsafe_allow_html=True)
     
-    daily_gen = current_gen * 8  # Assume 8 hours of good generation
-    co2_saved = daily_gen * 0.82  # kg CO2 per kWh
-    trees_equivalent = co2_saved / 21  # 1 tree absorbs 21kg CO2/year, daily = /365
+    daily_gen = current_gen * 8  
+    co2_saved = daily_gen * 0.82  
+    trees_equivalent = co2_saved / 21  
     
     col1, col2, col3 = st.columns(3)
     
@@ -430,7 +427,7 @@ with tab1:
         fig_money.update_layout(height=200, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig_money, use_container_width=True)
 
-# --- TAB 2: Solar Forecast ---
+
 with tab2:
     current_dt = current_row['datetime']
     start = current_dt.replace(hour=0, minute=0, second=0)
@@ -444,7 +441,7 @@ with tab2:
         features = day_data[['irradiance_W_m2', 'temperature_C', 'cloud_percentage', 'hour']]
         day_data['pred'] = get_prediction(model, scaler, features) * num_panels
         
-        # Multi-metric visualization
+        
         fig = make_subplots(
             rows=2, cols=2,
             subplot_titles=("Solar Generation Forecast", "Irradiance Profile", "Temperature Trend", "Cloud Coverage"),
@@ -453,7 +450,7 @@ with tab2:
             horizontal_spacing=0.1
         )
         
-        # Main generation chart (full width)
+        
         fig.add_trace(go.Scatter(
             x=day_data['hour'],
             y=day_data['pred'],
@@ -466,7 +463,7 @@ with tab2:
             hovertemplate='<b>%{x}:00</b><br>%{y:.3f} kW<extra></extra>'
         ), row=1, col=1)
         
-        # Current hour marker
+       
         fig.add_vline(
             x=current_dt.hour,
             line_dash="dash",
@@ -476,7 +473,7 @@ with tab2:
             row=1, col=1
         )
         
-        # Irradiance
+        
         fig.add_trace(go.Scatter(
             x=day_data['hour'],
             y=day_data['irradiance_W_m2'],
@@ -487,7 +484,7 @@ with tab2:
             hovertemplate='%{y:.0f} W/m²<extra></extra>'
         ), row=2, col=1)
         
-        # Temperature
+       
         fig.add_trace(go.Scatter(
             x=day_data['hour'],
             y=day_data['temperature_C'],
@@ -498,7 +495,7 @@ with tab2:
             hovertemplate='%{y:.1f}°C<extra></extra>'
         ), row=2, col=2)
         
-        # Cloud coverage (inverted area)
+        
         fig.add_trace(go.Scatter(
             x=day_data['hour'],
             y=day_data['cloud_percentage'],
@@ -537,7 +534,7 @@ with tab2:
         
         st.plotly_chart(fig, use_container_width=True)
         
-        # Summary metrics with icons
+        
         st.markdown("<br>", unsafe_allow_html=True)
         col1, col2, col3, col4 = st.columns(4)
         
@@ -553,7 +550,7 @@ with tab2:
             revenue = day_data['pred'].sum() * GRID_RATE
             st.metric("💰 VALUE", f"₹{revenue:.2f}", delta=None)
 
-# --- TAB 3: Load Monitor ---
+
 with tab3:
     col1, col2 = st.columns([1, 2])
     
@@ -576,7 +573,7 @@ with tab3:
         st.markdown("<br>", unsafe_allow_html=True)
         st.metric("🏠 TOTAL LOAD", f"{total_load:.2f} kW")
         
-        # Breakdown pie chart
+        
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("### 📊 LOAD BREAKDOWN")
         
@@ -626,7 +623,7 @@ with tab3:
         st.markdown("### ⚡ POWER FLOW")
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Comparison bar chart
+        
         fig_bar = go.Figure()
         
         fig_bar.add_trace(go.Bar(
@@ -672,7 +669,7 @@ with tab3:
         
         st.plotly_chart(fig_bar, use_container_width=True)
         
-        # Net power calculation
+       
         net = total_load - gen
         
         st.markdown("<br>", unsafe_allow_html=True)
@@ -701,7 +698,7 @@ with tab3:
                 st.success(f"### 💚 VALUE")
                 st.success(f"₹**{hourly_value:.2f}**/hr • ₹**{daily_value:.2f}**/day")
         
-        # Real-time gauge for self-sufficiency
+        
         st.markdown("<br>", unsafe_allow_html=True)
         
         if total_load > 0:
@@ -737,7 +734,7 @@ with tab3:
         )
         st.plotly_chart(fig_suff, use_container_width=True)
 
-# --- TAB 4: Smart Scheduler ---
+
 with tab4:
     current_dt = current_row['datetime']
     end_dt = current_dt + timedelta(hours=24)
@@ -755,7 +752,7 @@ with tab4:
         st.markdown("### ⭐ OPTIMAL TIME SLOTS (NEXT 24H)")
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Top 3 slots with cards
+        
         cols = st.columns(3)
         for idx, (col, (_, row)) in enumerate(zip(cols, best_slots.head(3).iterrows()), 1):
             with col:
@@ -778,7 +775,7 @@ with tab4:
         
         st.markdown("<br><br>", unsafe_allow_html=True)
         
-        # Timeline visualization with heatmap
+        
         fig = make_subplots(
             rows=2, cols=1,
             row_heights=[0.7, 0.3],
@@ -786,7 +783,7 @@ with tab4:
             vertical_spacing=0.12
         )
         
-        # Main timeline
+     
         fig.add_trace(go.Scatter(
             x=future_df['datetime'],
             y=future_df['pred'],
@@ -798,7 +795,7 @@ with tab4:
             hovertemplate='%{x|%H:%M}<br>%{y:.2f} kW<extra></extra>'
         ), row=1, col=1)
         
-        # Highlight best slots
+       
         fig.add_trace(go.Scatter(
             x=best_slots['datetime'],
             y=best_slots['pred'],
@@ -813,14 +810,14 @@ with tab4:
             hovertemplate='<b>OPTIMAL</b><br>%{x|%H:%M}<br>%{y:.2f} kW<extra></extra>'
         ), row=1, col=1)
         
-        # Heatmap for quick visual
+        
         hours = future_df['hour'].values
         powers = future_df['pred'].values
         
-        # Create heatmap data (reshape for visualization)
+        
         heatmap_data = [[powers[i] if i < len(powers) else 0 for i in range(24)]]
         
-    # ✅ NEW / FIXED CODE
+    
 fig.add_trace(go.Heatmap(
     z=heatmap_data,
     x=list(range(24)),
@@ -833,7 +830,7 @@ fig.add_trace(go.Heatmap(
     showscale=True,
     hovertemplate='Hour %{x}:00<br>Power: %{z:.2f} kW<extra></extra>',
     colorbar=dict(
-        title=dict(text="kW", side="right") # Fixed structure
+        title=dict(text="kW", side="right") 
     )
     ), row=2, col=1)
 fig.update_xaxes(title_text="Time", row=1, col=1, gridcolor='#1a1a1a')
@@ -851,7 +848,7 @@ fig.update_layout(
         
 st.plotly_chart(fig, use_container_width=True)
         
-        # Recommendations
+        
 st.markdown("<br>", unsafe_allow_html=True)
 st.info(f"""
         💡 **SMART SCHEDULING TIPS:**
@@ -861,7 +858,7 @@ st.info(f"""
         - Potential daily savings: **₹{(best_slots.head(3)['pred'].sum() * GRID_RATE):.2f}**
         """)
 
-# --- TAB 5: ROI Analysis ---
+
 with tab5:
     with st.spinner("🔄 Running 30-day simulation..."):
         current_dt = current_row['datetime']
@@ -900,27 +897,27 @@ with tab5:
                     
                     wm_kwh = LOAD_PROFILE["Washing Machine"]["kwh"]
                     
-                    # Scenario A
+                    
                     load_A = hourly_load_base
                     if h == 20:
                         load_A += wm_kwh
                     bill_A_grid_only += (load_A * GRID_RATE)
                     
-                    # Scenario B
+                    
                     load_B = hourly_load_base
                     if h == 20:
                         load_B += wm_kwh
                     net_B = max(0, load_B - solar)
                     bill_B_solar_unopt += (net_B * GRID_RATE)
                     
-                    # Scenario C
+                   
                     load_C = hourly_load_base
                     if h == peak_hour:
                         load_C += wm_kwh
                     net_C = max(0, load_C - solar)
                     bill_C_solar_opt += (net_C * GRID_RATE)
             
-            # Top metrics
+           
             col1, col2, col3 = st.columns(3)
             
             with col1:
@@ -934,7 +931,7 @@ with tab5:
             
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Comparison chart
+            
             fig_comp = go.Figure()
             
             scenarios = ['Grid Only', 'Solar<br>(Unoptimized)', 'Solar + AI']
@@ -971,7 +968,7 @@ with tab5:
             
             st.markdown("---")
             
-            # Savings breakdown
+            
             col1, col2 = st.columns(2)
             
             with col1:
@@ -1007,7 +1004,7 @@ with tab5:
             
             st.markdown("---")
             
-            # ROI Calculator
+            
             st.markdown("### 📊 ROI CALCULATOR")
             st.markdown("<br>", unsafe_allow_html=True)
             
@@ -1044,7 +1041,7 @@ with tab5:
             
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Payback timeline
+            
             if monthly_savings > 0:
                 years = list(range(0, min(int(payback_years) + 10, 25)))
                 cumulative_savings = [monthly_savings * 12 * y for y in years]
@@ -1052,7 +1049,7 @@ with tab5:
                 
                 fig_roi = go.Figure()
                 
-                # Investment line
+                
                 fig_roi.add_hline(
                     y=0,
                     line_dash="dot",
@@ -1061,7 +1058,7 @@ with tab5:
                     annotation_position="right"
                 )
                 
-                # Net profit area
+                
                 fig_roi.add_trace(go.Scatter(
                     x=years,
                     y=net_profit,
@@ -1074,7 +1071,7 @@ with tab5:
                     hovertemplate='Year %{x}<br>Profit: ₹%{y:,.0f}<extra></extra>'
                 ))
                 
-                # Breakeven marker
+                
                 fig_roi.add_vline(
                     x=payback_years,
                     line_dash="dash",
@@ -1101,7 +1098,7 @@ with tab5:
                 
                 st.plotly_chart(fig_roi, use_container_width=True)
                 
-                # Verdict
+                
                 if payback_years <= 5:
                     st.success("✅ **EXCELLENT ROI!** System pays for itself in under 5 years. Highly recommended investment.")
                 elif payback_years <= 8:
@@ -1111,7 +1108,7 @@ with tab5:
         else:
             st.warning("⚠️ Insufficient data for 30-day simulation")
 
-# --- Animated Footer ---
+
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("---")
 st.markdown(f"""
