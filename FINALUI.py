@@ -25,7 +25,7 @@ LOAD_PROFILE = {
 
 # --- Page Config ---
 st.set_page_config(
-    page_title="SuryaShakti AI",
+    page_title="SHEOS AI",
     page_icon="☀️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -265,7 +265,7 @@ with col2:
     st.metric("🤖", f"{model_accuracy*100:.1f}%", help="Model Accuracy")
 
 # --- Header ---
-st.markdown("<h1>☀️ SURYASHAKTI AI</h1>", unsafe_allow_html=True)
+st.markdown("<h1>☀️ SHEOS AI</h1>", unsafe_allow_html=True)
 st.markdown(f"<p style='text-align: center; color: #888; font-size: 1.2rem; margin-top: -10px;'>{current_row['datetime'].strftime('%d %B %Y • %H:%M')}</p>", unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1122,7 +1122,7 @@ st.markdown(f"""
                    font-size: 2.5rem;
                    margin-bottom: 10px;
                    text-shadow: 0 0 40px rgba(0, 255, 136, 0.5);'>
-            ☀️ SURYASHAKTI AI
+            ☀️ SHEOS AI
         </h2>
         <p style='color: #888; font-size: 1.1rem; margin: 10px 0;'>
             Powered by Machine Learning & Clean Energy 🌍
