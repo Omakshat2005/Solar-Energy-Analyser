@@ -32,261 +32,89 @@ st.set_page_config(
 )
 
 # --- Ultra Dark Theme CSS ---
+# --- Ultra Dark Theme CSS (Fixed Visibility) ---
 st.markdown("""
 <style>
-    /* Main Dark Background */
-    .main {
-        background: #0a0a0a;
+    /* 1. GLOBAL TEXT & BACKGROUND */
+    .main, .stApp {
+        background-color: #000000;
+        color: #ffffff;
     }
     
-    .block-container {
-        padding-top: 2rem;
-        background: #0a0a0a;
+    /* 2. CONTROLS (INPUTS) - FORCE WHITE BOX, BLACK TEXT */
+    /* Target Date, Time, Number, and Text inputs */
+    input[type="text"], input[type="number"], input[type="date"], input[type="time"] {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 2px solid #00ff9d !important;
+        border-radius: 5px;
+        font-weight: bold;
     }
     
-    /* Sidebar Dark */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0d0d0d 0%, #1a1a1a 100%);
-        border-right: 1px solid #2a2a2a;
+    /* Target Selectbox (Dropdowns) */
+    div[data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 2px solid #00ff9d !important;
+    }
+    /* Force text inside selectbox to be black */
+    div[data-baseweb="select"] span {
+        color: #000000 !important;
+    }
+    /* Dropdown menu options */
+    div[data-baseweb="popover"] div, ul[data-baseweb="menu"] {
+        background-color: #ffffff !important;
+    }
+    div[data-baseweb="option"], li[data-baseweb="option"] {
+        color: #000000 !important;
+    }
+
+    /* 3. LABELS (Text ABOVE the inputs) */
+    /* Make "Date", "Number of Panels", etc. Bright White */
+    .stDateInput label, .stTimeInput label, .stNumberInput label, .stSelectbox label, .stTextInput label {
+        color: #ffffff !important;
+        font-size: 1rem !important;
+        font-weight: 700 !important;
     }
     
-    [data-testid="stSidebar"] * {
-        color: #e0e0e0 !important;
+    /* 4. METRICS / WEATHER DETAILS */
+    /* The Value (e.g., "30°C", "850 W/m²") */
+    div[data-testid="stMetricValue"] {
+        color: #00ff9d !important; /* Neon Green */
+        text-shadow: 0 0 10px rgba(0, 255, 157, 0.4);
+    }
+    /* The Label (e.g., "Temperature", "Irradiance") */
+    div[data-testid="stMetricLabel"] {
+        color: #00b8ff !important; /* Neon Blue */
+        font-weight: bold;
+    }
+    /* The container for the metrics */
+    div[data-testid="metric-container"] {
+        background-color: #111111;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    /* 5. SIDEBAR Styling */
+    section[data-testid="stSidebar"] {
+        background-color: #0a0a0a;
+        border-right: 1px solid #333;
+    }
+    /* Sidebar Text */
+    section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] li {
+        color: #cccccc !important;
     }
     
-    /* Headers with Glow */
-    h1, h2, h3 {
-        background: linear-gradient(90deg, #00ff88 0%, #00d4ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: 800;
-        text-shadow: 0 0 40px rgba(0, 255, 136, 0.5);
-        letter-spacing: 1px;
-    }
-    
-    h1 {
-        font-size: 3.5rem !important;
-        text-align: center;
-        margin-bottom: 0;
-    }
-    
-    /* Neon Metrics */
-    [data-testid="stMetricValue"] {
-        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 2.5rem !important;
-        font-weight: 900;
-        text-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
-    }
-    
-    [data-testid="stMetricLabel"] {
-        color: #888 !important;
-        font-size: 0.95rem !important;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-    }
-    
-    [data-testid="stMetricDelta"] {
-        color: #00ff88 !important;
-    }
-    
-    /* Glass Card Effect */
-    [data-testid="metric-container"] {
-        background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, rgba(0, 212, 255, 0.05) 100%);
-        backdrop-filter: blur(20px);
-        border: 2px solid rgba(0, 255, 136, 0.2);
-        border-radius: 20px;
-        padding: 25px;
-        box-shadow: 0 8px 32px rgba(0, 255, 136, 0.15),
-                    inset 0 0 20px rgba(0, 255, 136, 0.05);
-        transition: all 0.3s ease;
-    }
-    
-    [data-testid="metric-container"]:hover {
-        border-color: rgba(0, 255, 136, 0.4);
-        box-shadow: 0 12px 48px rgba(0, 255, 136, 0.25),
-                    inset 0 0 30px rgba(0, 255, 136, 0.1);
-        transform: translateY(-3px);
-    }
-    
-    /* Futuristic Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 15px;
-        background: transparent;
-        border-bottom: 2px solid #1a1a1a;
-        padding-bottom: 10px;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, rgba(0, 212, 255, 0.05) 100%);
-        backdrop-filter: blur(10px);
-        border: 2px solid rgba(0, 255, 136, 0.15);
-        border-radius: 15px;
-        padding: 15px 30px;
-        color: #888;
-        font-weight: 700;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    .stTabs [data-baseweb="tab"]:hover {
-        background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%);
-        border-color: rgba(0, 255, 136, 0.3);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(0, 255, 136, 0.2);
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
-        color: #000 !important;
+    /* 6. BUTTONS */
+    .stButton > button {
+        background: linear-gradient(45deg, #00ff9d, #00b8ff);
+        color: black;
+        font-weight: bold;
         border: none;
-        box-shadow: 0 8px 30px rgba(0, 255, 136, 0.5);
-        font-weight: 900;
-    }
-    
-    /* Input Fields */
-    .stNumberInput input, .stDateInput input, .stTextInput input {
-        background: rgba(0, 255, 136, 0.05) !important;
-        border: 2px solid rgba(0, 255, 136, 0.2) !important;
-        border-radius: 12px !important;
-        color: #e0e0e0 !important;
-        padding: 12px !important;
-        font-size: 1.1rem !important;
-    }
-    
-    .stNumberInput input:focus, .stDateInput input:focus {
-        border-color: rgba(0, 255, 136, 0.5) !important;
-        box-shadow: 0 0 20px rgba(0, 255, 136, 0.3) !important;
-    }
-    
-    /* Slider */
-    .stSlider {
-        padding: 20px 0;
-    }
-    
-    .stSlider > div > div > div {
-        background: rgba(0, 255, 136, 0.1);
-    }
-    
-    .stSlider > div > div > div > div {
-        background: linear-gradient(90deg, #00ff88 0%, #00d4ff 100%);
-        box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-    }
-    
-    /* Checkbox */
-    .stCheckbox {
-        color: #e0e0e0;
-    }
-    
-    .stCheckbox > label {
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
-    
-    /* Alert Boxes */
-    .stAlert {
-        background: rgba(0, 255, 136, 0.05);
-        backdrop-filter: blur(10px);
-        border-radius: 15px;
-        border: 2px solid rgba(0, 255, 136, 0.2);
-        color: #e0e0e0;
-    }
-    
-    /* Success Box */
-    [data-baseweb="notification"] {
-        background: rgba(0, 255, 136, 0.1);
-        border-left: 4px solid #00ff88;
-    }
-    
-    /* Expander */
-    .streamlit-expanderHeader {
-        background: rgba(0, 255, 136, 0.05);
-        backdrop-filter: blur(10px);
-        border-radius: 12px;
-        border: 2px solid rgba(0, 255, 136, 0.2);
-        color: #e0e0e0;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .streamlit-expanderHeader:hover {
-        border-color: rgba(0, 255, 136, 0.4);
-        box-shadow: 0 4px 20px rgba(0, 255, 136, 0.2);
-    }
-    
-    /* Text Color */
-    p, span, div, label, li {
-        color: #d0d0d0;
-    }
-    
-    /* Dataframe */
-    [data-testid="stDataFrame"] {
-        background: rgba(0, 255, 136, 0.02);
-        border-radius: 15px;
-        border: 1px solid rgba(0, 255, 136, 0.1);
-    }
-    
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-        width: 12px;
-        height: 12px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: #0d0d0d;
-        border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #00d4ff 0%, #00ff88 100%);
-        box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
-    }
-    
-    /* Separator */
-    hr {
-        border: none;
-        height: 2px;
-        background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 136, 0.5) 50%, transparent 100%);
-        margin: 30px 0;
-    }
-    
-    /* Button */
-    .stButton button {
-        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
-        color: #000;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 35px;
-        font-weight: 800;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 25px rgba(0, 255, 136, 0.4);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    .stButton button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 35px rgba(0, 255, 136, 0.6);
-    }
-    
-    /* Spinner */
-    .stSpinner > div {
-        border-top-color: #00ff88 !important;
     }
 </style>
 """, unsafe_allow_html=True)
-
 # --- Data Loading & Model Training (Cached) ---
 @st.cache_resource
 def load_and_train_model(csv_path):
@@ -992,25 +820,27 @@ with tab4:
         # Create heatmap data (reshape for visualization)
         heatmap_data = [[powers[i] if i < len(powers) else 0 for i in range(24)]]
         
-        fig.add_trace(go.Heatmap(
-            z=heatmap_data,
-            x=list(range(24)),
-            y=['Power'],
-            colorscale=[
-                [0, '#ff6b6b'],
-                [0.5, '#ffd93d'],
-                [1, COLORS['primary']]
-            ],
-            showscale=True,
-            hovertemplate='Hour %{x}:00<br>Power: %{z:.2f} kW<extra></extra>',
-            colorbar=dict(title="kW", titleside="right")
-        ), row=2, col=1)
+    # ✅ NEW / FIXED CODE
+fig.add_trace(go.Heatmap(
+    z=heatmap_data,
+    x=list(range(24)),
+    y=['Power'],
+    colorscale=[
+        [0, '#ff6b6b'],
+        [0.5, '#ffd93d'],
+        [1, COLORS['primary']]
+    ],
+    showscale=True,
+    hovertemplate='Hour %{x}:00<br>Power: %{z:.2f} kW<extra></extra>',
+    colorbar=dict(
+        title=dict(text="kW", side="right") # Fixed structure
+    )
+    ), row=2, col=1)
+fig.update_xaxes(title_text="Time", row=1, col=1, gridcolor='#1a1a1a')
+fig.update_xaxes(title_text="Hour", row=2, col=1, gridcolor='#1a1a1a')
+fig.update_yaxes(title_text="Power (kW)", row=1, col=1, gridcolor='#1a1a1a')
         
-        fig.update_xaxes(title_text="Time", row=1, col=1, gridcolor='#1a1a1a')
-        fig.update_xaxes(title_text="Hour", row=2, col=1, gridcolor='#1a1a1a')
-        fig.update_yaxes(title_text="Power (kW)", row=1, col=1, gridcolor='#1a1a1a')
-        
-        fig.update_layout(
+fig.update_layout(
             height=700,
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='#0a0a0a',
@@ -1019,11 +849,11 @@ with tab4:
             hovermode='x unified'
         )
         
-        st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)
         
         # Recommendations
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.info(f"""
+st.markdown("<br>", unsafe_allow_html=True)
+st.info(f"""
         💡 **SMART SCHEDULING TIPS:**
         - Run washing machine at **{best_slots.iloc[0]['datetime'].strftime('%H:%M')}** for maximum solar usage
         - Charge EV during peak hours: **{best_slots.iloc[0]['datetime'].strftime('%H:%M')} - {best_slots.iloc[2]['datetime'].strftime('%H:%M')}**
